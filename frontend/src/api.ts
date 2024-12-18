@@ -51,4 +51,38 @@ interface ApiResponse {
     }
     return await response.json();
   };
+
+  export const updateUsername = async (
+    currentUsername: string,
+    newUsername: string
+  ): Promise<ApiResponse> => {
+    const response = await fetch(`${API_URL}/update-username`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentUsername, newUsername }),
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      console.log(response);
+      throw new Error('Username update failed');
+    }
+    return await response.json();
+  };
+  
+ export const updatePassword = async (
+  username: string,
+  newPassword: string
+): Promise<ApiResponse> => {
+  const response = await fetch(`${API_URL}/update-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, newPassword }),
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    throw new Error('Password update failed');
+  }
+  return await response.json();
+};
+
   

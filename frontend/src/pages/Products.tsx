@@ -3,6 +3,9 @@ import { Dropdown } from "react-bootstrap";
 import { FiShoppingCart } from "react-icons/fi";
 import { useGlobalContext } from "../context/GlobalProvider";
 import { CgProfile } from "react-icons/cg";
+import './style.css'
+import { useNavigate } from "react-router-dom";
+import Cards from "../components/Card";
 interface Item{
   id: number;
   name?: string;
@@ -20,19 +23,22 @@ interface Item{
 }
 
 function Products() {
+  const [initiate,setInitiate] = useState(false);
   const [products,setProducts] = useState<Item[]>([]);
   const [currentProducts,setCurrentProducts] = useState("Books");
-  const productsList = ["Books","Clothes","Equipment"];
   const [filteredProducts,setFilteredProducts] = useState<Item[]>([]);
   const [errorServer,setErrorServer] = useState("");
   const [error,setError] = useState(null);
   const [loading,setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const {show,user,isLoading} = useGlobalContext();
+  const {show,user,isLoading,cart,setCart} = useGlobalContext();
+  const productsList = ["Books","Clothes","Equipment"];
+
   useEffect(() => {
-    console.log("show: " + show);
-  })
+    console.log(cart);
+  }, [cart])
+  
   useEffect(() => {
         fetch(`http://localhost:3000/${currentProducts.toLocaleLowerCase()}`)
             .then((response) => { 
@@ -59,6 +65,7 @@ function Products() {
   }, [currentProducts])
   
   const handleItemClick = (setItem : string) => {
+    console.log(setItem);
     setCurrentProducts(setItem);
   }
   if(errorServer){
@@ -68,16 +75,14 @@ function Products() {
     return <p>Loading...</p>
   }
   if(isLoading) { 
-    return <p>Loading...</p>
+    return <p>Loading..</p>
   }
   if(error){
     return <p>Error happened: {error}.</p>
   }
-  const list = (element : Item,target: string) => {
-    if (target in element) {
-      return element[target as keyof Item];
-    }
-    return null;
+  if(!user && !initiate){
+    setInitiate(true);
+    setCart([]);
   }
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const term = event.target.value.toLocaleLowerCase();
@@ -94,11 +99,12 @@ function Products() {
         product.title?.toLowerCase().includes(term) ||
         product.weight_kg?.toString().includes(term) 
   );
-  setFilteredProducts(filtered);
+    setFilteredProducts(filtered);
   }
+
   return (
-    <div className="">
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark mx-auto">
+    <div className="font">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark mx-auto" style={{alignItems:'center'}}>
 
       <a className="navbar-brand" href="/" style={{marginLeft: 10}}>Home</a>
       <div className="collapse navbar-collapse" id="navbarNav">
@@ -122,13 +128,19 @@ function Products() {
         </ul>
       </div>
       {!show ? (
-        <div>
+        <div className="validation">
           <a className="btn btn-primary" href="/register" role="button" style={{marginRight: 10}}>Register</a>
           <a className="btn btn-primary" href="/login" role="button" style={{marginRight: 10}}>Login</a>
         </div>
       ) : (
-        <div className="text-white" style={{marginRight:10}}>
-          <strong className="text-info">{user}</strong> <a href="/profile"><CgProfile size={26} /></a>
+        <div className="text-white link" style={{marginRight:10, display:"inline-flex"}}>
+          <h5 style={{margin:0,color:"#60a5fa"}}>{user}</h5> 
+          <a href="/profile" style={{marginLeft:10}}><CgProfile size={26}/></a>
+          <div style={{marginRight:100}}></div>
+          <a href="/cart" className=""><FiShoppingCart size={24} style={{marginRight:12}} /></a>
+          {
+            cart.length != 0 && <strong className="cart_counter" style={{marginRight: 10}}>{cart.length}</strong>
+          }
         </div>
       )}
       </nav>
@@ -139,7 +151,6 @@ function Products() {
                 onChange={handleSearch}
                 style={{
                     width : "60vw",
-                    height : "2vw",
                     fontFamily: "monospace"
                 }}
                  placeholder="Search for something..."
@@ -147,70 +158,10 @@ function Products() {
           </div>
       <div className="row">
   {filteredProducts.map((element) => (
-    <div className="col-md-2 mb-3" key={element.id}>
-      <div className={`card h-100 card-hover ${list(element, "stock") === 0 ? "out-of-stock" : ""}`}>
-        <img
-          className="card-img"
-          src={`images/${list(element, "title") || list(element, "name")}.jpg`}
-          alt={`${list(element, "title") || list(element, "name")}`}
-          style={{
-            maxHeight: 320,
-            objectFit:"cover",
-          }}
-        />
-        <div className="card-body">
-          <h5 className="card-title">{list(element, "title") || list(element, "name")} <span className="text-secondary">{list(element, "price")}$</span></h5>
-          {list(element, "author") && (
-            <div className="card-text">
-              <strong>Author:</strong> {list(element, "author")}
-            </div>
-          )}
-          {list(element, "category") && (
-            <div className="card-text">
-              <strong>Category:</strong> {list(element, "category")}
-            </div>
-          )}
-          {list(element, "genre") && (
-            <div className="card-text">
-              <strong>Genre:</strong> {list(element, "genre")}
-            </div>
-          )}
-          {list(element, "size") && (
-            <div className="card-text">
-              <strong>Size:</strong> {list(element, "size")}
-            </div>
-          )}
-          {list(element, "color") && (
-            <div className="card-text">
-              <strong>Color:</strong> {list(element, "color")}
-            </div>
-          )}
-          {list(element, "material") && (
-            <div className="card-text">
-              <strong>Material:</strong> {list(element, "material")}
-            </div>
-          )}
-          {list(element, "weight_kg") && (
-            <div className="card-text">
-              <strong>Weight:</strong> {list(element, "weight_kg")} kg
-            </div>
-          )}
-          {list(element, "publication_year") && (
-            <div className="card-text">
-              <strong>Publication Year:</strong> {list(element, "publication_year")}
-            </div>
-          )}
-          <div className="card-text">
-            <strong>Stock:</strong> {list(element, "stock")}
-          </div>
-          {show && (
-            <div className="card-text">
-              <a className="btn btn-primary" href="/cart" role="button">Cart<FiShoppingCart /></a>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <Cards
+      element = {element}
+      show = {show}
+    />
   ))}
 </div>
 

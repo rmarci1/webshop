@@ -62,4 +62,43 @@
     object-fit: cover;
     border-radius: 10px 0 0 10px;
   }
-  
+.link a {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+.link a:hover {
+  color: gray;
+  background-color: transparent;
+  text-decoration: underline;
+}  
+.validation a {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+.font{
+  font-family: 'Poppins';
+}
+.cart_counter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 14px;
+  color: white;
+  margin-left: 20px;
+  border-radius: 50%;
+  background-color: #ff758c;
+  width: 18px;
+  height: 18px;
+  display: flex; /* Középre igazításhoz */
+  align-items: center; /* Vertikális középre */
+  justify-content: center; /* Horizontális középre */
+}
+.bg{
+  background-color: rgb(131, 125, 118);
+}
+.size{
+  font-size: 33px;
+}
+

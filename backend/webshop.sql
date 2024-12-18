@@ -26,6 +26,11 @@ CREATE TABLE equipment (
     price DECIMAL(10, 2) NOT NULL,
     stock INT NOT NULL
 );
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL
+);
 INSERT INTO books (title, author, genre, price, stock, publication_year) VALUES
 ('The Great Gatsby', 'F. Scott Fitzgerald', 'Classic', 10.99, 50, 1925),
 ('1984', 'George Orwell', 'Dystopian', 8.99, 30, 1949),

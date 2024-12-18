@@ -6,12 +6,13 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import Products from './components/Products';
-import Home from './components/Home';
-import Register from './components/Register';
-import Login from './components/Login';
+import Products from './pages/Products';
+import Home from './pages/Home';
+import Register from './pages/Register';
+import Login from './pages/Login';
 import { GlobalProvider } from './context/GlobalProvider';
-import Profile from './components/Profile';
+import Profile from './pages/Profile';
+import Cart from './pages/Cart';
 
 const router = createBrowserRouter([
     {
@@ -31,8 +32,12 @@ const router = createBrowserRouter([
       element: <Login/>
     },
     {
-      path: "profile",
+      path: "/profile",
       element: <Profile/>
+    },
+    {
+      path: "/cart",
+      element: <Cart/>
     }
 ])
 createRoot(document.getElementById('root')!).render(

@@ -114,6 +114,60 @@ app.get('/equipment', async (req, res) => {
         res.status(500).json({ error: 'Database query failed' });
     }
 });
+app.post('/update-username', async (req, res) => {
+  const { currentUsername, newUsername } = req.body;
 
-// Start the server
+  try {
+    // Ellenőrzés, hogy az új név nem foglalt-e
+    const [existingUser] = await db.query(
+      'SELECT * FROM users WHERE username = ?',
+      [newUsername]
+    );
+    if (existingUser.length > 0) {
+      return res.status(400).json({ message: 'Username already taken' });
+    }
+
+    // Frissítés a régi név alapján
+    const [result] = await db.query(
+      'UPDATE users SET username = ? WHERE username = ?',
+      [newUsername, currentUsername]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'Username updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/update-password', async (req, res) => {
+  const { username, newPassword } = req.body;
+
+  try {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        message: 'Password must be at least 6 characters long, contain a lowercase letter, an uppercase letter, and a number',
+      });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const [result] = await db.query(
+      'UPDATE users SET password = ? WHERE username = ?',
+      [hashedPassword, username]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 app.listen(port);

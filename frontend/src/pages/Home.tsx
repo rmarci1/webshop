@@ -1,4 +1,9 @@
+import { CgProfile } from "react-icons/cg";
+import { FiShoppingCart } from "react-icons/fi";
+import { useGlobalContext } from "../context/GlobalProvider";
+
 export default function Home() {
+    const {user,show,cart} = useGlobalContext();
     return (
         <div className="bg-dark min-vh-100 text-white">
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark mx-auto">
@@ -15,8 +20,22 @@ export default function Home() {
                     </ul>
                 </div>
                 <div>
-                <a className="btn btn-primary" href="/register" role="button" style={{marginRight: 10}}>Register</a>
-                <a className="btn btn-primary" href="/login" role="button" style={{marginRight: 10}}>Login</a>
+                 {!show ? (
+                        <div className="validation">
+                          <a className="btn btn-primary" href="/register" role="button" style={{marginRight: 10}}>Register</a>
+                          <a className="btn btn-primary" href="/login" role="button" style={{marginRight: 10}}>Login</a>
+                        </div>
+                      ) : (
+                        <div className="text-white link" style={{marginRight:10, display:"inline-flex"}}>
+                          <h5 style={{margin:0,color:"#60a5fa"}}>{user}</h5> 
+                          <a href="/profile" style={{marginLeft:10}}><CgProfile size={26}/></a>
+                          <div style={{marginRight:100}}></div>
+                          <a href="/cart" className=""><FiShoppingCart size={24} style={{marginRight:12}} /></a>
+                          {
+                            cart.length != 0 && <strong className="cart_counter" style={{marginRight: 10}}>{cart.length}</strong>
+                          }
+                        </div>
+                      )}
                 </div>
             </nav>
             <div className="container">
